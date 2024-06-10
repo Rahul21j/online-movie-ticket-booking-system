@@ -4,12 +4,11 @@ import NavLinks from './nav-links';
 import { PowerIcon } from '@heroicons/react/24/outline';
 import Image from "next/image";
 
-
 export default function SideNav() {
   return (
     <div className="flex h-full flex-col px-3 py-4 md:px-2">
       <Link
-        className="mb-2 flex h-20 items-end justify-start rounded-md bg-blue-600 p-4 md:h-40"
+        className="mb-2 flex h-20 items-center justify-center rounded-md bg-blue-600 p-4 md:h-40"
         href="/"
       >
         <div className="w-32 text-white md:w-40">
@@ -17,7 +16,7 @@ export default function SideNav() {
           className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
           src="/images.png"
           alt="Next.js Logo"
-          width={130}
+          width={160}
           height={15}
           priority
         />

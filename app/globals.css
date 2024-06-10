@@ -21,10 +21,11 @@ body {
   background: linear-gradient(
       to bottom,
       transparent,
-      rgb(var(--background-end-rgb))
+      rgba(var(--background-end-rgb), 0) 
     )
-    rgb(var(--background-start-rgb));
+    rgba(var(--background-start-rgb), 0); 
 }
+
 
 @layer utilities {
   .text-balance {
