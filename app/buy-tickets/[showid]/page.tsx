@@ -16,6 +16,7 @@ type ShowType = {
 };
 
 const Page = () => {
+  
   const [shows, setShows] = useState<ShowType[]>([]);
 
   return (

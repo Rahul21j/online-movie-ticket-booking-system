@@ -1,5 +1,5 @@
 import Movie from '@/app/models/Movie';
-import { connectDB } from '@/config/connectDB';
+import connectDB from '@/config/connectDB';
 import { NextResponse } from 'next/server';
 
 connectDB();

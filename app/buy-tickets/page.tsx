@@ -7,16 +7,15 @@ import { Select } from "@/app/ui/Select";
 import SelectItem from "@/app/ui/SelectItem";
 import Input from "@/app/ui/Input";
 import { Button } from "@/app/ui/button";
-import { showtimes } from "@/app/lib/placeholder-data";
 
 type ShowType = {
   id: string;
-  title: string;
-  description: string;
-  timings: {
-    type: string;
-    time: string;
-  }[];
+  date: string;
+  timings: string[];
+  movieType: string[];
+  movie: string;
+  moviePoster: string;
+  moviePlots: string;
 };
 
 type TicketType = {
@@ -37,12 +36,14 @@ const Page = () => {
 
   useEffect(() => {
     const fetchShow = async () => {
-      const foundShow = showtimes.find((showtime) => showtime.id === showid);
-      setShow(foundShow || null);
+      if (showid) {
+        const res = await fetch(`/api/buy-tickets?id=${showid}`);
+        const data = await res.json();
+        console.log(data);
+        setShow(data.show);
+      }
     };
-    if (showid) {
-      fetchShow();
-    }
+    fetchShow();
   }, [showid]);
 
   if (!show) {
@@ -86,11 +87,38 @@ const Page = () => {
       seats: seatArray,
     };
 
-    setTickets((prevTickets) => [...prevTickets, newTicket]);
+    try {
+      const res = await fetch('/api/my-tickets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: '6667e2be563f06eea61ca563',
+          showId: show.id,
+          seatNumbers: seatArray,
+          showType: show.movieType[0],
+          movie: show.movie,
+        }),
+      });
+  
+      if (!res.ok) {
+        throw new Error('Failed to book ticket');
+      }
+  
+      const data = await res.json();
+      console.log('Ticket booked:', data);
 
-    console.log("Tickets updated:", [...tickets, newTicket]);
-    router.push('/my-tickets');
-  };
+      setTickets((prevTickets) => [...prevTickets, newTicket]);
+
+      console.log("Tickets updated:", [...tickets, newTicket]);
+      router.push('/my-tickets');
+    }
+    catch (error) {
+      console.error('Error booking ticket:', error);
+      alert('Error booking ticket. Please try again.');
+    }
+};
 
   return (
     <div className="w-full max-w-4xl mx-auto py-12 md:py-16 lg:py-20">
@@ -106,19 +134,19 @@ const Page = () => {
         </div>
         <div className="space-y-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{show.title}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{show.movie}</h1>
             <p className="text-gray-500 dark:text-gray-400">
-              {show.description}
+              {show.moviePlot}
             </p>
           </div>
           <form onSubmit={handleFormSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="showtime">Select Showtime</Label>
-                <Select id="showtime" defaultValue={show.timings[0].time}>
+                <Select id="showtime" defaultValue={show.timings[0]}>
                   {show.timings.map((timing, index) => (
-                    <SelectItem key={index} value={timing.time}>
-                      {timing.type} - {timing.time}
+                    <SelectItem key={index} value={timing}>
+                      {show.movieType[index]} - {timing}
                     </SelectItem>
                   ))}
                 </Select>
