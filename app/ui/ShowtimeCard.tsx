@@ -8,21 +8,23 @@ type Showtime = {
 type ShowtimeCardProps = {
   id: string;
   title: string;
-  description: string;
+  movieType: string[];
   timings: Showtime[];
+  date: string;
 };
   
-  const ShowtimeCard = ({ id, title, description, timings }: ShowtimeCardProps) => {
+  const ShowtimeCard = ({ id, title, timings, movieType, date }: ShowtimeCardProps) => {
     return (
       <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
-          <h3 className="whitespace-nowrap text-2xl font-semibold leading-none tracking-tight">{title}</h3>
+          <h3 className="whitespace-nowrap overflow-hidden text-2xl font-semibold leading-none tracking-tight" title={title}>{title}</h3>
+          <span className="text-gray-500">{date}</span>
         </div>
         <div className="p-6">
-        {timings.map((showtime, index) => (
+        {timings.map((time, index) => (
           <div className="flex items-center justify-between mb-2" key={index}>
-            <span className="text-gray-500">{showtime.type}</span>
-            <span className="text-gray-500">{showtime.time}</span>
+            <span className="text-gray-500">{time}</span>
+            <span className="text-gray-500">{movieType[index]}</span>
           </div>
         ))}
           

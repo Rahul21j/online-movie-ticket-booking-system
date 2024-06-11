@@ -18,15 +18,6 @@ type ShowType = {
 const Page = () => {
   const [shows, setShows] = useState<ShowType[]>([]);
 
-  useEffect(() => {
-    const fetchShows = async () => {
-        const foundShow = showtimes
-        setShows(foundShow || null);
-    };
-
-    fetchShows();
-  }, []);
-
   return (
     <div className="w-full max-w-4xl mx-auto py-12 md:py-16 lg:py-20">
       <h1 className="text-3xl font-bold tracking-tight mb-8">Buy Tickets</h1>

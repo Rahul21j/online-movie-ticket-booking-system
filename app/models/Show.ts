@@ -15,13 +15,16 @@ const showSchema = new Schema({
     type: Number,
     required: true,
   },
-  time: {
+  date: {
     type: String,
     required: true,
   },
+  timings: {
+    type: [String],
+    required: true,
+  },
   movieType: {
-    type: String,
-    enum: ['2D', '3D', '4D'],
+    type: [String],
     required: true,
   },
 });

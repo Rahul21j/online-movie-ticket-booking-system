@@ -22,11 +22,11 @@ const movieSchema = new Schema({
     type: String,
     required: true,
   },
-  description: {
+  fullplot: {
     type: String,
     required: true,
   },
-  language: {
+  languages: {
     type: [String],
     required: true,
   },
