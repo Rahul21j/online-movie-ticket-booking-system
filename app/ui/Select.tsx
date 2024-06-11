@@ -11,6 +11,8 @@ import { SelectItem } from './SelectItem';
 type SelectProps = {
   id: string;
   defaultValue?: string;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  value?: string;
   children: React.ReactNode;
 };
 

@@ -300,8 +300,8 @@ export default async function Home({
             </button>
           </div>
             <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-              {showtimes.map((showtime: { id: string; title: string; showtimes: { type: string; time: string; }[]; }, index: Key | null | undefined) => (
-                <ShowtimeCard id={showtime.id} key={index} title={showtime.title} showtimes={showtime.showtimes} />
+              {showtimes.map((showtime: { id: string; title: string; timings: { type: string; time: string; }[]; }, index: Key | null | undefined) => (
+                <ShowtimeCard id={showtime.id} key={index} title={showtime.title} timings={showtime.timings} description={""} />
               ))}
             </div>
           </div>

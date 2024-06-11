@@ -251,7 +251,8 @@ const showtimes = [
   {
     id: '1',
     title: 'Avengers: Endgame',
-    showtimes: [
+    description: 'After the devastating events of Avengers: Infinity War, the universe is in ruins. With the help of remaining allies, the Avengers assemble once more to undo Thanos\' actions and restore order to the universe.',
+    timings: [
       { type: '2D', time: '10:00 AM' },
       { type: '3D', time: '1:30 PM' },
       { type: 'IMAX', time: '6:45 PM' },
@@ -260,7 +261,8 @@ const showtimes = [
   {
     id: '2',
     title: 'Inception',
-    showtimes: [
+    description: 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.',
+    timings: [
       { type: '2D', time: '11:00 AM' },
       { type: '3D', time: '3:15 PM' },
       { type: 'IMAX', time: '8:30 PM' },
@@ -269,7 +271,8 @@ const showtimes = [
   {
     id: '3',
     title: 'The Dark Knight',
-    showtimes: [
+    description: 'When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham. The Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.',
+    timings: [
       { type: '2D', time: '12:45 PM' },
       { type: '3D', time: '5:00 PM' },
       { type: 'IMAX', time: '9:15 PM' },
@@ -277,59 +280,100 @@ const showtimes = [
   },
   {
     id: '4',
-    title: 'The Dark Knight',
-    showtimes: [
-      { type: '2D', time: '12:45 PM' },
-      { type: '3D', time: '5:00 PM' },
-      { type: 'IMAX', time: '9:15 PM' },
+    title: 'Interstellar',
+    description: 'A team of explorers travel through a wormhole in space in an attempt to ensure humanity\'s survival.',
+    timings: [
+      { type: '2D', time: '12:00 PM' },
+      { type: '3D', time: '4:00 PM' },
+      { type: 'IMAX', time: '8:00 PM' },
     ],
   },
   {
     id: '5',
-    title: 'The Dark Knight',
-    showtimes: [
-      { type: '2D', time: '12:45 PM' },
-      { type: '3D', time: '5:00 PM' },
-      { type: 'IMAX', time: '9:15 PM' },
+    title: 'The Lord of the Rings: The Return of the King',
+    description: 'Gandalf and Aragorn lead the World of Men against Sauron\'s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.',
+    timings: [
+      { type: '2D', time: '1:00 PM' },
+      { type: '3D', time: '5:30 PM' },
+      { type: 'IMAX', time: '9:45 PM' },
     ],
   },
   {
     id: '6',
-    title: 'The Dark Knight',
-    showtimes: [
-      { type: '2D', time: '12:45 PM' },
-      { type: '3D', time: '5:00 PM' },
-      { type: 'IMAX', time: '9:15 PM' },
+    title: 'The Matrix',
+    description: 'When a beautiful stranger leads computer hacker Neo to a forbidding underworld, he discovers the shocking truth--the life he knows is the elaborate deception of an evil cyber-intelligence.',
+    timings: [
+      { type: '2D', time: '11:30 AM' },
+      { type: '3D', time: '3:00 PM' },
+      { type: 'IMAX', time: '7:30 PM' },
     ],
   },
   {
     id: '7',
-    title: 'The Dark Knight',
-    showtimes: [
-      { type: '2D', time: '12:45 PM' },
-      { type: '3D', time: '5:00 PM' },
-      { type: 'IMAX', time: '9:15 PM' },
+    title: 'Forrest Gump',
+    description: 'The presidencies of Kennedy and Johnson, the events of Vietnam, Watergate, and other historical events unfold from the perspective of an Alabama man with an IQ of 75, whose only desire is to be reunited with his childhood sweetheart.',
+    timings: [
+      { type: '2D', time: '10:30 AM' },
+      { type: '3D', time: '2:00 PM' },
+      { type: 'IMAX', time: '6:30 PM' },
     ],
   },
   {
     id: '8',
-    title: 'The Dark Knight',
-    showtimes: [
-      { type: '2D', time: '12:45 PM' },
-      { type: '3D', time: '5:00 PM' },
-      { type: 'IMAX', time: '9:15 PM' },
+    title: 'Gladiator',
+    description: 'A former Roman General sets out to exact vengeance against the corrupt emperor who murdered his family and sent him into slavery.',
+    timings: [
+      { type: '2D', time: '11:00 AM' },
+      { type: '3D', time: '3:00 PM' },
+      { type: 'IMAX', time: '7:00 PM' },
     ],
   },
   {
     id: '9',
-    title: 'The Dark Knight',
-    showtimes: [
-      { type: '2D', time: '12:45 PM' },
-      { type: '3D', time: '5:00 PM' },
-      { type: 'IMAX', time: '9:15 PM' },
+    title: 'Titanic',
+    description: 'A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.',
+    timings: [
+      { type: '2D', time: '12:00 PM' },
+      { type: '3D', time: '4:30 PM' },
+      { type: 'IMAX', time: '9:00 PM' },
     ],
   },
 ];
+
+const tickets = {
+  upcoming: [
+    {
+      title: "Interstellar",
+      type: "2D",
+      date: "June 9, 2023 - 7:00 PM",
+      quantity: "2 Tickets",
+      seats: "Seats: A1, A2"
+    },
+    {
+      title: "Interstellar",
+      type: "2D",
+      date: "June 9, 2023 - 7:00 PM",
+      quantity: "1 Ticket",
+      seats: "Seat: B3"
+    }
+  ],
+  history: [
+    {
+      title: "Interstellar",
+      type: "2D",
+      date: "June 9, 2023 - 7:00 PM",
+      quantity: "2 Tickets",
+      seats: "Seats: A1, A2"
+    },
+    {
+      title: "Interstellar",
+      type: "2D",
+      date: "June 9, 2023 - 7:00 PM",
+      quantity: "1 Ticket",
+      seats: "Seat: B3"
+    }
+  ]
+};
 
 export {
   users,
@@ -338,6 +382,7 @@ export {
   revenue,
   movies,
   showtimes,
+  tickets,
 };
 
 export function map(arg0) {

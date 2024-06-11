@@ -1,5 +1,6 @@
 import Header from "@/app/ui/Header";
 import Footer from "@/app/ui/Footer";
+import { tickets } from "@/app/lib/placeholder-data";
 
 export default function MyTickets() {
     return (
@@ -13,32 +14,21 @@ export default function MyTickets() {
                             <p className="text-gray-500 dark:text-gray-400 mt-2">Review your upcoming movie tickets.</p>
                         </div>
                         <div className="mt-8 space-y-4">
-                            <div className="flex items-center justify-between">
-                            <div>
-                                <div className="flex">
-                                    <h3 className="font-semibold mr-2   ">Interstellar</h3>
-                                    <span className="text-gray-500">(2D)</span>
+                            {tickets.upcoming.map((ticket, index) => (
+                                <div key={index} className="flex items-center justify-between">
+                                <div>
+                                    <div className="flex">
+                                    <h3 className="font-semibold mr-2">{ticket.title}</h3>
+                                    <span className="text-gray-500">({ticket.type})</span>
+                                    </div>
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.date}</p>
                                 </div>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm">June 9, 2023 - 7:00 PM</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="font-semibold">2 Tickets</p>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm">Seats: A1, A2</p>
-                            </div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                            <div>
-                                <div className="flex">
-                                    <h3 className="font-semibold mr-2   ">Interstellar</h3>
-                                    <span className="text-gray-500">(2D)</span>
+                                <div className="text-right">
+                                    <p className="font-semibold">{ticket.quantity}</p>
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.seats}</p>
                                 </div>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm">June 9, 2023 - 7:00 PM</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="font-semibold">1 Ticket</p>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm">Seat: B3</p>
-                            </div>
-                            </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                     <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 flex flex-col justify-between">
@@ -47,32 +37,21 @@ export default function MyTickets() {
                             <p className="text-gray-500 dark:text-gray-400 mt-2">Review your previous movie tickets.</p>
                         </div>
                         <div className="mt-8 space-y-4">
-                            <div className="flex items-center justify-between">
-                            <div>
-                                <div className="flex">
-                                    <h3 className="font-semibold mr-2   ">Interstellar</h3>
-                                    <span className="text-gray-500">(2D)</span>
+                            {tickets.history.map((ticket, index) => (
+                                <div key={index} className="flex items-center justify-between">
+                                <div>
+                                    <div className="flex">
+                                    <h3 className="font-semibold mr-2">{ticket.title}</h3>
+                                    <span className="text-gray-500">({ticket.type})</span>
+                                    </div>
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.date}</p>
                                 </div>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm">June 9, 2023 - 7:00 PM</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="font-semibold">2 Tickets</p>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm">Seats: A1, A2</p>
-                            </div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                            <div>
-                                <div className="flex">
-                                    <h3 className="font-semibold mr-2   ">Interstellar</h3>
-                                    <span className="text-gray-500">(2D)</span>
+                                <div className="text-right">
+                                    <p className="font-semibold">{ticket.quantity}</p>
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.seats}</p>
                                 </div>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm">June 9, 2023 - 7:00 PM</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="font-semibold">1 Ticket</p>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm">Seat: B3</p>
-                            </div>
-                            </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
