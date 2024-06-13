@@ -7,13 +7,15 @@ import axios from "axios";
 
 export default function Page(){
     const [movies, setMovies] = useState<any[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [filteredMovies, setFilteredMovies] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchMovies = async () => {
             try {
                 const response = await axios.get('/api/movies');
-                console.log(response.data.movies);
                 setMovies(response.data.movies); 
+                setFilteredMovies(response.data.movies);
             } catch (error) {
                 console.error('Failed to fetch movies:', error);
             }
@@ -21,6 +23,17 @@ export default function Page(){
 
         fetchMovies(); 
     }, []);
+
+    useEffect(() => {
+        const result = movies.filter((movie) =>
+          movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredMovies(result);
+      }, [searchQuery, movies]);
+    
+      const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(event.target.value);
+      };
        
         return (
             <>
@@ -29,11 +42,13 @@ export default function Page(){
                     <div className="flex">
                         <h2 className="text-3xl font-bold mb-6 mr-10">Movies</h2>
                         <div className="relative w-full max-w-md">
-                            <input
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pr-10"
-                                placeholder="Search movies..."
-                                type="search"
-                            />
+                        <input
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pr-10"
+                            placeholder="Search movies..."
+                            type="search"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                        />
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -52,7 +67,7 @@ export default function Page(){
                         </div>
                     </div>
                     <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-                        {movies.map((movie: { id: string; title: string; poster: string; }, index: Key | null | undefined) => (
+                        {filteredMovies.map((movie: { id: string; title: string; poster: string; }, index: Key | null | undefined) => (
                             <MovieCard id={movie.id} key={index} title={movie.title} poster={movie.poster} />
                         ))}
                     </div>

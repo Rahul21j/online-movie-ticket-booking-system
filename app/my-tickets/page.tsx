@@ -66,7 +66,7 @@ export default function MyTickets() {
             <div className="mt-8 space-y-4">
               {upcomingTickets.map((ticket, index) => (
                 <div key={index} className="flex items-center justify-between">
-                  <div>
+                  <div style={{width: '21rem'}}>
                     <div className="flex">
                       <h3 className="font-semibold mr-2">{ticket.show.movie}</h3>
                       <span className="text-gray-500">({ticket.showType})</span>
@@ -92,7 +92,7 @@ export default function MyTickets() {
             <div className="mt-8 space-y-4">
               {historyTickets.map((ticket, index) => (
                 <div key={index} className="flex items-center justify-between">
-                  <div>
+                  <div style={{width: '21rem'}}>
                     <div className="flex">
                       <h3 className="font-semibold mr-2">{ticket.show.movie}</h3>
                       <span className="text-gray-500">({ticket.showType})</span>
