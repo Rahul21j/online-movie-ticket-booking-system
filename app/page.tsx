@@ -5,7 +5,7 @@ import MovieCard from "@/app/ui/MovieCard";
 import ShowtimeCard from "@/app/ui/ShowtimeCard";
 import Footer from "@/app/ui/Footer";
 import Link from "next/link";
-import { movies } from "@/app/lib/placeholder-data";
+import axios from "axios";
 
 export default function Home({
   searchParams,
@@ -16,24 +16,33 @@ export default function Home({
   };
 }) {
   const [shows, setShows] = useState([]);
+  const [movies, setMovies] = useState([]);
 
   useEffect(() => {
     async function fetchShows() {
       try {
-        const response = await fetch("/api/shows"); // Replace with your actual API endpoint
-        if (!response.ok) {
-          throw new Error("Failed to fetch shows");
-        }
-        const data = await response.json();
-        setShows(data.shows); // Assuming the API response has a 'shows' property with an array of shows
+        const response = await axios.get("/api/shows"); // Replace with your actual API endpoint
+        setShows(response.data.shows); // Assuming the API response has a 'shows' property with an array of shows
       } catch (error) {
         console.error("Error fetching shows:", error);
         // Handle error state if needed
       }
     }
 
+    async function fetchMovies() {
+      try {
+        const response = await axios.get("/api/movies"); // Replace with your actual API endpoint
+        setMovies(response.data.movies); // Assuming the API response has a 'movies' property with an array of movies
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+        // Handle error state if needed
+      }
+    }
+
+    fetchMovies();
     fetchShows();
   }, []);
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -77,7 +86,7 @@ export default function Home({
             <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {shows.map(
                 (
-                  showtime: {
+                  show: {
                     id: string;
                     title: string;
                     timings: { type: string; time: string }[];
@@ -87,12 +96,12 @@ export default function Home({
                   index: number
                 ) => (
                   <ShowtimeCard
-                    id={showtime.id}
+                    id={show.id}
                     key={index}
-                    title={showtime.title}
-                    timings={showtime.timings}
-                    movieType={showtime.movieType}
-                    date={showtime.date}
+                    title={show.movie}
+                    timings={show.timings}
+                    movieType={show.movieType}
+                    date={show.date}
                   />
                 )
               )}

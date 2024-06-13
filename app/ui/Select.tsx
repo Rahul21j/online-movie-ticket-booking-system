@@ -1,46 +1,64 @@
 // src/components/ui/Select.tsx
 
-"use client"; // Mark this component as a Client Component
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SelectTrigger from './SelectTrigger';
 import SelectValue from './SelectValue';
 import SelectContent from './SelectContent';
-import { SelectItem } from './SelectItem';
+import SelectItem from './SelectItem';
 
 type SelectProps = {
   id: string;
   defaultValue?: string;
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange?: (value: string) => void;
   value?: string;
   children: React.ReactNode;
 };
 
-export const Select: React.FC<SelectProps> = ({ id, defaultValue, children }) => {
-  const [selected, setSelected] = useState(defaultValue);
+export const Select: React.FC<SelectProps> = ({ id, defaultValue, onChange, value, children }) => {
+  const [selected, setSelected] = useState(defaultValue || ''); // Use defaultValue or empty string as initial selected value
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSelect = (value: string) => {
-    setSelected(value);
+  useEffect(() => {
+    if (value !== undefined && value !== selected) {
+      setSelected(value);
+    }
+  }, [value, selected]);
+
+  const handleSelect = (newValue: string) => {
+    setSelected(newValue);
     setIsOpen(false);
+    if (onChange) {
+      onChange(newValue);
+    }
   };
 
+  const handleInternalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = e.target.value;
+    setSelected(newValue);
+    if (onChange) {
+      onChange(newValue);
+    }
+  };
   return (
     <div className="relative">
       <select
         id={id}
-        value={selected}
-        onChange={(e) => setSelected(e.target.value)}
+        value={selected} // Bind selected state to the value attribute of the select element
+        onChange={handleInternalChange}
         className="absolute inset-0 w-full h-full opacity-0"
       >
-        {children}
+        {React.Children.map(children, (child) =>
+          React.cloneElement(child as React.ReactElement<any>, {
+            onClick: () => handleSelect((child as React.ReactElement<any>).props.value),
+          })
+        )}
       </select>
       <SelectTrigger onClick={() => setIsOpen(!isOpen)}>
         <SelectValue placeholder={selected || 'Select an option'} />
       </SelectTrigger>
       {isOpen && (
         <SelectContent>
-          {React.Children.map(children, (child) => 
+          {React.Children.map(children, (child) =>
             React.cloneElement(child as React.ReactElement<any>, {
               onClick: () => handleSelect((child as React.ReactElement<any>).props.value),
             })

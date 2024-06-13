@@ -1,9 +1,7 @@
-import mongoose from 'mongoose';
 import { NextResponse } from 'next/server';
 import Show from '@/app/models/Show';
 import Movie from '@/app/models/Movie';
 import connectDB from '@/config/connectDB';
-import { title } from 'process';
 
 connectDB();
 

@@ -12,13 +12,14 @@ type SelectItemProps = {
 
 export const SelectItem: React.FC<SelectItemProps> = ({ value, children, onClick }) => {
   return (
-    <li
+    <option
       className="cursor-pointer select-none relative py-2 pl-3 pr-9"
       role="option"
+      value={value}
       onClick={onClick}
     >
       {children}
-    </li>
+    </option>
   );
 };
 

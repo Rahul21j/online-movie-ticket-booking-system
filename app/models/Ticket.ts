@@ -22,9 +22,12 @@ const ticketSchema = new Schema({
   },
   showType: {
     type: String,
-    enum: ['2D', '3D', '4D'],
     required: true,
   },
+  showTime:{
+    type: String,
+    required: true,
+  }
 });
 
 const Ticket = mongoose.models.Ticket || mongoose.model('Ticket', ticketSchema);

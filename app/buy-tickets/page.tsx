@@ -1,12 +1,14 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import Label from "@/app/ui/Label";
-import { Select } from "@/app/ui/Select";
-import SelectItem from "@/app/ui/SelectItem";
-import Input from "@/app/ui/Input";
-import { Button } from "@/app/ui/button";
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import axios from 'axios';
+import Label from '@/app/ui/Label';
+import { Select } from '@/app/ui/Select';
+import SelectItem from '@/app/ui/SelectItem';
+import Input from '@/app/ui/Input';
+import { Button } from '@/app/ui/button';
+import Header from '../ui/Header';
+import Footer from '../ui/Footer';
 
 type ShowType = {
   id: string;
@@ -15,32 +17,36 @@ type ShowType = {
   movieType: string[];
   movie: string;
   moviePoster: string;
-  moviePlots: string;
+  moviePlot: string;
 };
 
 type TicketType = {
-  title: string;
   type: string;
   date: string;
-  quantity: string;
   seats: string[];
+  showtime: string;
+  email: string;
+  showid: string;
 };
 
 const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const showid = searchParams.get("id");
+  const showid = searchParams.get('id');
   const [show, setShow] = useState<ShowType | null>(null);
   const [tickets, setTickets] = useState<TicketType[]>([]);
-  const [ticketQuantity, setTicketQuantity] = useState<number>(2);
+  const [seatInput, setSeatInput] = useState<string>('');
 
   useEffect(() => {
     const fetchShow = async () => {
       if (showid) {
-        const res = await fetch(`/api/buy-tickets?id=${showid}`);
-        const data = await res.json();
-        console.log(data);
-        setShow(data.show);
+        try {
+          const res = await axios.get(`/api/buy-tickets?id=${showid}`);
+          setShow(res.data.show);
+        } catch (error) {
+          console.error('Error fetching show:', error);
+          // Handle error fetching show data
+        }
       }
     };
     fetchShow();
@@ -50,145 +56,136 @@ const Page = () => {
     return <p>Show not found</p>;
   }
 
-  const handleTicketChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setTicketQuantity(parseInt(e.target.value));
+  const handleSeatInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSeatInput(e.target.value);
   };
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let seatInput = (document.getElementById("seats") as HTMLInputElement)
-      .value;
-    let seatArray: string[];
 
+    if (!showid) {
+      alert('Show ID is missing.');
+      return;
+    }
+
+    const seatInput = (document.getElementById('seats') as HTMLInputElement).value.trim();
+    const ticketQuantity = parseInt((document.getElementById('tickets') as HTMLInputElement).value);
+    let seatArray: string[];
+    
     if (seatInput) {
-      seatArray = seatInput.split(",").map((seat) => seat.trim().toUpperCase());
+      seatArray = seatInput.split(',').map((seat) => seat.trim().toUpperCase());
       for (let seat of seatArray) {
         if (!/^[A-Z][0-9]+$/.test(seat)) {
-          alert("Invalid seat format. Please use the format like A1, B2, etc.");
+          alert('Invalid seat format. Please use the format like A1, B2, etc.');
           return;
         }
       }
       if (seatArray.length !== ticketQuantity) {
-        alert("Number of seats must match the quantity of tickets.");
+        alert('Number of seats must match the quantity of tickets.');
         return;
       }
     } else {
-      seatArray = Array.from(
-        { length: ticketQuantity },
-        (_, i) => String.fromCharCode(65 + i) + (i + 1)
-      );
+      seatArray = Array.from({ length: ticketQuantity }, (_, i) => String.fromCharCode(65 + i) + (i + 1));
     }
 
+    const type = (document.getElementById('showtime') as HTMLInputElement).value.split('-')[0].trim();
+    const showtime = (document.getElementById('showtime') as HTMLInputElement).value.split('-')[1].trim();
+    const email = (document.getElementById('email') as HTMLInputElement).value;
     const newTicket: TicketType = {
-      title: show.title,
-      type: show.timings[0].type,
-      date: show.timings[0].time,
-      quantity: `${ticketQuantity}`,
+      type,
+      date: show.date,
       seats: seatArray,
+      showtime,
+      email,
+      showid
     };
 
     try {
-      const res = await fetch('/api/my-tickets', {
-        method: 'POST',
+      const config = {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          userId: '6667e2be563f06eea61ca563',
-          showId: show.id,
-          seatNumbers: seatArray,
-          showType: show.movieType[0],
-          movie: show.movie,
-        }),
-      });
-  
-      if (!res.ok) {
-        throw new Error('Failed to book ticket');
-      }
-  
-      const data = await res.json();
-      console.log('Ticket booked:', data);
-
+      };
+      const res = await axios.post('/api/my-tickets', newTicket, config);
       setTickets((prevTickets) => [...prevTickets, newTicket]);
-
-      console.log("Tickets updated:", [...tickets, newTicket]);
       router.push('/my-tickets');
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error booking ticket:', error);
       alert('Error booking ticket. Please try again.');
     }
-};
+  };
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-12 md:py-16 lg:py-20">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-        <div>
-          <img
-            src="/placeholder.svg"
-            width={600}
-            height={400}
-            alt="Show Poster"
-            className="rounded-lg shadow-lg"
-          />
-        </div>
-        <div className="space-y-4">
+    <>
+      <Header/>
+      <div className="w-full max-w-4xl mx-auto py-12 md:py-16 lg:py-20 min-h-[84vh]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{show.movie}</h1>
-            <p className="text-gray-500 dark:text-gray-400">
-              {show.moviePlot}
-            </p>
+            <img
+              src={show.moviePoster}
+              width={600}
+              height={400}
+              alt="Show Poster"
+              className="rounded-lg shadow-lg"
+            />
           </div>
-          <form onSubmit={handleFormSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="showtime">Select Showtime</Label>
-                <Select id="showtime" defaultValue={show.timings[0]}>
-                  {show.timings.map((timing, index) => (
-                    <SelectItem key={index} value={timing}>
-                      {show.movieType[index]} - {timing}
-                    </SelectItem>
-                  ))}
-                </Select>
+          <div className="space-y-4">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">{show.movie}</h1>
+              <p className="text-gray-500 dark:text-gray-400">
+                {show.moviePlot}
+              </p>
+            </div>
+            <form onSubmit={handleFormSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="showtime">Select Showtime</Label>
+                  <Select id="showtime" defaultValue={`${show.movieType[0]} - ${show.timings[0]}`}>
+                    {show.timings.map((timing, index) => (
+                      <SelectItem key={index} value={`${show.movieType[index]} - ${timing}`}>
+                        {show.movieType[index]} - {timing}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="tickets">Select Tickets</Label>
+                  <Select id="tickets" defaultValue='1'>
+                    {[1, 2, 3, 4, 5].map((number) => (
+                      <SelectItem key={number} value={number.toString()}>
+                        {number}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                </div>
               </div>
               <div>
-                <Label htmlFor="tickets">Select Tickets</Label>
-                <Select
-                  id="tickets"
-                  onChange={handleTicketChange}
-                  value={ticketQuantity.toString()}
-                >
-                  {[1, 2, 3, 4, 5].map((number) => (
-                    <SelectItem key={number} value={number.toString()}>
-                      {number}
-                    </SelectItem>
-                  ))}
-                </Select>
+                <Label htmlFor="seats">Seats</Label>
+                <Input
+                  id="seats"
+                  type="text"
+                  placeholder="Enter seat preferences (e.g., A1, B2, C3)"
+                  value={seatInput}
+                  onChange={handleSeatInputChange}
+                />
               </div>
-            </div>
-            <div>
-              <Label htmlFor="seats">Seats</Label>
-              <Input
-                id="seats"
-                type="text"
-                placeholder="Enter seat preferences (e.g., A1, B2, C3)"
-              />
-            </div>
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" type="text" placeholder="Enter your name" />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="Enter your email" />
-            </div>
-            <Button type="submit" className="w-full">
-              Confirm
-            </Button>
-          </form>
+              <div>
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" type="text" placeholder="Enter your name" />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="Enter your email" />
+              </div>
+              <Button type="submit" className="w-full">
+                Confirm
+              </Button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+      <Footer/>
+    </>
   );
 };
 
