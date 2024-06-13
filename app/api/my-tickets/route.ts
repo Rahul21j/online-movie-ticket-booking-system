@@ -5,6 +5,7 @@ import { parse } from "cookie";
 import Show from "@/app/models/Show";
 import mongoose from "mongoose";
 import User from "@/app/models/User";
+import Movie from "@/app/models/Movie";
 
 connectDB();
 
@@ -50,7 +51,6 @@ export async function GET(request: NextRequest) {
   try {
     const cookies = parse(request.headers.get("cookie") || "");
     const userId = cookies.userId;
-    console.log(request.headers);
 
     if (!userId) {
       return NextResponse.json(
@@ -58,10 +58,21 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       );
     }
+    const tickets = await Ticket.find({ userId }).lean();
 
-    const tickets = await Ticket.find({ userId });
-
-    return NextResponse.json({ success: true, tickets }, { status: 200 });
+    const ticketsWithShows = await Promise.all(tickets.map(async ticket => {
+      const show = await Show.findById(ticket.showId).lean();
+      const movie = await Movie.findById(show.movieId).lean();
+      return {
+        ...ticket,
+        show: {
+          ...show,
+          movie: movie.title,
+        }
+      };
+    }));
+console.log(ticketsWithShows)
+    return NextResponse.json({ success: true, ticketsWithShows }, { status: 200 });
   } catch (error) {
     console.error("Error fetching tickets:", error);
     return NextResponse.json(
@@ -71,12 +82,31 @@ export async function GET(request: NextRequest) {
   }
 }
 
+export async function DELETE(request: NextRequest, response: NextResponse) {
+  if (request.method === "DELETE") {
+    try {
+      const body = await request.json();
+      const id = body['id'];
+      await Ticket.findByIdAndDelete(id);
+      console.log("Success")
+      return NextResponse.json({ success: true, message: "Ticket deleted successfully" }, { status: 200 });
+    } catch (error) {
+      return NextResponse.json({ success: false, message: "Failed to delete ticket" }, { status: 500 });
+    }
+  } else {
+    return NextResponse.json({ success: false, message: "Method not allowed" }, { status: 405 });
+  }
+}
 export async function handler(request: NextRequest) {
   if (request.method === "POST") {
     return POST(request);
   } else if (request.method === "GET") {
     return GET(request);
-  } else {
+  }
+  else if (request.method === "DELETE") {
+    return DELETE(request, response);
+  } 
+  else {
     return NextResponse.json(
       { error: `Method ${request.method} Not Allowed` },
       { status: 405 }

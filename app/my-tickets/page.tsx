@@ -2,6 +2,7 @@
 import Header from "@/app/ui/Header";
 import Footer from "@/app/ui/Footer";
 import { useEffect, useState } from "react";
+import axios from "axios";
   
 export default function MyTickets() {
     const [upcomingTickets, setUpcomingTickets] = useState([]);
@@ -10,18 +11,19 @@ export default function MyTickets() {
     useEffect(() => {
         async function fetchTickets() {
           try {
-            const response = await fetch(`/api/my-tickets`);
+            const response = await axios.get(`/api/my-tickets`);
     
-            if (!response.ok) {
-              throw new Error('Failed to fetch tickets');
-            }
-    
-            const data = await response.json();
-            const { tickets } = data;
-    
-            const upcoming = tickets.filter((ticket: { date: string | Date; }) => new Date(ticket.date) >= new Date());
-            const history = tickets.filter((ticket: { date: string | Date; }) => new Date(ticket.date) < new Date());
-    
+            const tickets = response.data.ticketsWithShows;
+
+            console.log(tickets);
+
+            const upcoming = tickets.filter((ticket: {
+              show: any; date: string | Date; 
+            }) => new Date(ticket.show.date) >= new Date());
+            const history = tickets.filter((ticket: {
+              show: any; date: string | Date; 
+            }) => new Date(ticket.show.date) < new Date());
+
             setUpcomingTickets(upcoming);
             setHistoryTickets(history);
           } catch (error) {
@@ -32,6 +34,25 @@ export default function MyTickets() {
         fetchTickets();
       }, []);
     
+      const handleDelete = async (id: string) => {
+        try {
+          console.log(id);
+          const response = await axios.delete(`/api/my-tickets`,{
+            data: { id: id }
+          });
+          if (response.status === 200) {
+            setUpcomingTickets(upcomingTickets.filter(ticket => ticket._id !== id));
+            setHistoryTickets(historyTickets.filter(ticket => ticket._id !== id));
+            alert("Ticket deleted successfully");
+        } else {
+            alert("Failed to delete ticket");
+        }
+        } catch (error) {
+          console.error("Failed to delete ticket", error);
+          alert("Failed to delete ticket");
+        }
+      };
+
     return (
         <>
       <Header />
@@ -47,15 +68,18 @@ export default function MyTickets() {
                 <div key={index} className="flex items-center justify-between">
                   <div>
                     <div className="flex">
-                      <h3 className="font-semibold mr-2">{ticket.movie}</h3>
+                      <h3 className="font-semibold mr-2">{ticket.show.movie}</h3>
                       <span className="text-gray-500">({ticket.showType})</span>
                     </div>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.date}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.show.date} - {ticket.showTime}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">{ticket.seatNumbers.length}</p>
+                    <p className="font-semibold">Persons: {ticket.seatNumbers.length}</p>
                     <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.seatNumbers.join(', ')}</p>
                   </div>
+                  <div>
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button" onClick={() => handleDelete(ticket._id)}>Cancel</button>
+                  </div>  
                 </div>
               ))}
             </div>
@@ -70,13 +94,13 @@ export default function MyTickets() {
                 <div key={index} className="flex items-center justify-between">
                   <div>
                     <div className="flex">
-                      <h3 className="font-semibold mr-2">{ticket.movie}</h3>
+                      <h3 className="font-semibold mr-2">{ticket.show.movie}</h3>
                       <span className="text-gray-500">({ticket.showType})</span>
                     </div>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.date}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.show.date} - {ticket.showTime}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">{ticket.seatNumbers.length}</p>
+                    <p className="font-semibold">Persons: {ticket.seatNumbers.length}</p>
                     <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.seatNumbers.join(', ')}</p>
                   </div>
                 </div>

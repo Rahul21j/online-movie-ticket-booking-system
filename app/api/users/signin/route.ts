@@ -44,6 +44,10 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
     });
 
+    response.cookies.set('userId', user._id, {
+      httpOnly: true,
+    });
+
     return response;
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
