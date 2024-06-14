@@ -20,7 +20,7 @@ const MovieCard = ({ id, title, poster }: MovieCardProps) => {
           style={{ aspectRatio: '1', objectFit: 'cover' }}
         />
         <h3 className="text-lg font-bold mb-2">{title}</h3>
-          <Link href={`/buy-tickets/${id}`}>
+          <Link href={`/view-shows?id=${id}`}>
             <button className="hover:underline inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-md px-3">
               View Shows
             </button>
