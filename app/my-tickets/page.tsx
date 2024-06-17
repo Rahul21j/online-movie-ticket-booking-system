@@ -11,7 +11,16 @@ export default function MyTickets() {
     useEffect(() => {
         async function fetchTickets() {
           try {
-            const response = await axios.get(`/api/my-tickets`);
+            const response = await axios.get(`/api/my-tickets`,
+              {
+                withCredentials: true, // Ensures cookies are sent
+                // Optionally, you can also set headers if needed
+                headers: {
+                  'Content-Type': 'application/json',
+                  // Other headers if required
+                },
+              }
+            );
     
             const tickets = response.data.ticketsWithShows;
 
@@ -23,7 +32,8 @@ export default function MyTickets() {
             const history = tickets.filter((ticket: {
               show: any; date: string | Date; 
             }) => new Date(ticket.show.date) < new Date());
-
+            console.log(upcomingTickets);
+            console.log(historyTickets);
             setUpcomingTickets(upcoming);
             setHistoryTickets(history);
           } catch (error) {
@@ -41,6 +51,8 @@ export default function MyTickets() {
             data: { id: id }
           });
           if (response.status === 200) {
+            console.log(upcomingTickets);
+            console.log(historyTickets);
             setUpcomingTickets(upcomingTickets.filter(ticket => ticket._id !== id));
             setHistoryTickets(historyTickets.filter(ticket => ticket._id !== id));
             alert("Ticket deleted successfully");

@@ -9,6 +9,7 @@ import Input from '@/app/ui/Input';
 import { Button } from '@/app/ui/button';
 import Header from '../ui/Header';
 import Footer from '../ui/Footer';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 type ShowType = {
   id: string;
@@ -31,6 +32,7 @@ type TicketType = {
 
 const Page = () => {
   const router = useRouter();
+  const { user, error, isLoading } = useUser();
   const searchParams = useSearchParams();
   const showid = searchParams.get('id');
   const [show, setShow] = useState<ShowType | null>(null);
@@ -51,6 +53,16 @@ const Page = () => {
     };
     fetchShow();
   }, [showid]);
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/');
+    }
+  }, [isLoading, user, router]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error.message}</div>;
+  if (!user) return router.push('/');
 
   if (!show) {
     return <p>Show not found</p>;

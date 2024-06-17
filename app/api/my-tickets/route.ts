@@ -1,7 +1,7 @@
 import Ticket from "@/app/models/Ticket";
 import connectDB from "@/config/connectDB";
 import { NextRequest, NextResponse } from "next/server";
-import { parse } from "cookie";
+import { cookies } from 'next/headers'
 import Show from "@/app/models/Show";
 import mongoose from "mongoose";
 import User from "@/app/models/User";
@@ -49,19 +49,22 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const cookies = parse(request.headers.get("cookie") || "");
-    const userId = cookies.userId;
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      );
-    }
+    const cookieStore = cookies();
+    const userObject = cookieStore.get('user');
+    const userEncoded = userObject.value;
+    const email = Buffer.from(userEncoded, 'base64').toString('utf-8');
+
+    const userDetails = await User.findOne({ email }).lean();
+    const userId = userDetails._id;
+
     const tickets = await Ticket.find({ userId }).lean();
 
+    console.log(tickets);
+    
     const ticketsWithShows = await Promise.all(tickets.map(async ticket => {
       const show = await Show.findById(ticket.showId).lean();
+
       const movie = await Movie.findById(show.movieId).lean();
       return {
         ...ticket,
@@ -71,7 +74,7 @@ export async function GET(request: NextRequest) {
         }
       };
     }));
-console.log(ticketsWithShows)
+    console.log(ticketsWithShows)
     return NextResponse.json({ success: true, ticketsWithShows }, { status: 200 });
   } catch (error) {
     console.error("Error fetching tickets:", error);

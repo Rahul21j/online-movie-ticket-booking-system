@@ -1,6 +1,21 @@
+import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
+import { Menu } from '@headlessui/react';
+import { useEffect } from 'react';
+import Cookies from 'js-cookie';
 
-export default function Header () {
+export default function Header() {
+  const { user, isLoading } = useUser();
+  
+  useEffect(() => {
+    if (user) {
+      const encodedEmail = Buffer.from(user.email).toString('base64');
+      Cookies.set('user_email', encodedEmail);
+    } else {
+      Cookies.remove('user_email');
+    }
+  }, [user]);
+  
   return (
     <header className="bg-gray-900 text-white py-4 px-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -38,19 +53,43 @@ export default function Header () {
           <Link href="/my-tickets" className="hover:underline">
             My Tickets
           </Link>
-          
         </nav>
       </div>
       <div className="flex items-center gap-4">
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : user ? (
+        <>
+          <Menu as="div" className="relative inline-block text-left">
+            <Menu.Button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3">
+                <img src={user.picture} alt={user.nickname ?? ''} width="35" height="35" className="rounded-full" />
+            </Menu.Button>
+            <Menu.Items className="bg-gray-900 text-white absolute right-0 mt-2 w-56 origin-top-right border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none">
+              <div className="py-1">
+                <Menu.Item>
+                  {({ active }) => (
+                    <Link href="/profile" className={`bg-gray-900 text-white block px-4 py-2 text-sm ${active ? 'bg-gray-100' : ''}`}>
+                      View Profile
+                    </Link>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <Link href="/api/auth/logout" className={`bg-gray-900 text-white block px-4 py-2 text-sm ${active ? 'bg-gray-100' : ''}`}>
+                      Sign Out
+                    </Link>
+                  )}
+                </Menu.Item>
+              </div>
+            </Menu.Items>
+          </Menu>
+        </>
+      ) : (
         <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3">
-        <Link href="/signin">
-          Sign In
-        </Link>
+          <Link href="/api/auth/login">Sign In</Link>
         </button>
-        {/* <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-md px-3">
-          Buy Tickets
-        </button> */}
-      </div>
+      )}
+    </div>
     </header>
   );
 };
