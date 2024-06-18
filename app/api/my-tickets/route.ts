@@ -20,10 +20,10 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
+      const userEmail = email.toLowerCase();
       const showId = new mongoose.Types.ObjectId(showid);
       const show = await Show.findById(showId);
-      const user = await User.findOne({ email });
-
+      const user = await User.findOne({ email : userEmail });
       const newTicket = new Ticket({
         userId: user._id,
         showId: show._id,
