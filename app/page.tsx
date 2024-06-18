@@ -21,24 +21,32 @@ export default function Home({
   useEffect(() => {
     async function fetchShows() {
       try {
-        const response = await axios.get("/api/shows"); // Replace with your actual API endpoint
-        setShows(response.data.shows); // Assuming the API response has a 'shows' property with an array of shows
+        const response = await axios.get("/api/shows"); 
+        setShows(response.data.shows); 
       } catch (error) {
         console.error("Error fetching shows:", error);
-        // Handle error state if needed
       }
     }
 
     async function fetchMovies() {
       try {
-        const response = await axios.get("/api/movies"); // Replace with your actual API endpoint
-        setMovies(response.data.movies); // Assuming the API response has a 'movies' property with an array of movies
+        const response = await axios.get("/api/movies"); 
+        setMovies(response.data.movies); 
       } catch (error) {
         console.error("Error fetching movies:", error);
-        // Handle error state if needed
       }
     }
 
+    async function addUserToDB(){
+      try {
+        console.log('adding user to database');
+        const response = await axios.post("/api/user/signup");
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      }
+    }
+
+    addUserToDB();
     fetchMovies();
     fetchShows();
   }, []);

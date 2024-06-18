@@ -12,7 +12,6 @@ connectDB();
 export async function POST(request: NextRequest) {
   if (request.method === "POST") {
     try {
-
         const { type, date, seats, showtime, email, showid } =
         await request.json();
         if (!type || !date || !seats || !showtime || !email) {
@@ -51,7 +50,7 @@ export async function GET(request: NextRequest) {
   try {
 
     const cookieStore = cookies();
-    const userObject = cookieStore.get('user');
+    const userObject = cookieStore.get('user_email');
     const userEncoded = userObject.value;
     const email = Buffer.from(userEncoded, 'base64').toString('utf-8');
 
@@ -61,7 +60,7 @@ export async function GET(request: NextRequest) {
     const tickets = await Ticket.find({ userId }).lean();
 
     console.log(tickets);
-    
+
     const ticketsWithShows = await Promise.all(tickets.map(async ticket => {
       const show = await Show.findById(ticket.showId).lean();
 

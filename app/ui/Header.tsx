@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Menu } from '@headlessui/react';
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 
 export default function Header() {
   const { user, isLoading } = useUser();
@@ -11,8 +12,22 @@ export default function Header() {
     if (user) {
       const encodedEmail = Buffer.from(user.email).toString('base64');
       Cookies.set('user_email', encodedEmail);
+
+      // Call the API to check and add the user to MongoDB
+      axios.post('/api/users/signup', {
+        email: user.email,
+        // name: user.name,
+        // picture: user.picture,
+        // nickname: user.nickname,
+      })
+      .then(response => {
+        console.log('User checked/added:', response.data);
+      })
+      .catch(error => {
+        console.error('Error checking/adding user:', error);
+      });
     } else {
-      Cookies.remove('user_email');
+      // Cookies.remove('user_email');
     }
   }, [user]);
   
