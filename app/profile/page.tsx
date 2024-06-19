@@ -19,7 +19,7 @@ export default function ProfileClient() {
             <div className="text-center">
               <img
                 className="w-32 h-32 rounded-full mx-auto"
-                src={user.picture}
+                src={user.picture ?? '/placeholder.jpg'}
                 alt={user.name ?? ''}
               />
               <h2 className="mt-4 text-3xl font-bold text-gray-900">{user.nickname ?? ''}</h2>

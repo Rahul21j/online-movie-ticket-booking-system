@@ -9,7 +9,7 @@ export default function Header() {
   const { user, isLoading } = useUser();
   
   useEffect(() => {
-    if (user) {
+    if (user && user.email) {
       const encodedEmail = Buffer.from(user.email).toString('base64');
       Cookies.set('user_email', encodedEmail);
 
@@ -65,9 +65,11 @@ export default function Header() {
           <Link href="/shows" className="hover:underline">
             Showtimes
           </Link>
-          <Link href="/my-tickets" className="hover:underline">
-            My Tickets
-          </Link>
+          {user ? 
+            (<Link href="/my-tickets" className="hover:underline">
+              My Tickets
+            </Link>) : null
+          }
         </nav>
       </div>
       <div className="flex items-center gap-4">
@@ -77,7 +79,9 @@ export default function Header() {
         <>
           <Menu as="div" className="relative inline-block text-left">
             <Menu.Button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3">
-                <img src={user.picture} alt={user.nickname ?? ''} width="35" height="35" className="rounded-full" />
+              {user.picture && user.nickname ? (
+                <img src={user.picture} alt={user.nickname} width="35" height="35" className="rounded-full" />
+              ) : null}
             </Menu.Button>
             <Menu.Items className="bg-gray-900 text-white absolute right-0 mt-2 w-56 origin-top-right border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none">
               <div className="py-1">

@@ -28,7 +28,7 @@ export default function Page() {
   return (
     <>
       <Header />
-      <div className="container mx-auto my-6 min-h-[81vh]">
+      <div className="container mx-auto my-6 min-h-[77vh]">
         <h2 className="text-3xl font-bold mb-6 mr-10">Show Times</h2>
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {shows.map(
@@ -38,14 +38,15 @@ export default function Page() {
                 id: string;
                 title: string;
                 description: string;
-                timings: { type: string; time: string }[];
+                movieType: string[];
+                timings: string[];
               },
               index: Key | null | undefined
             ) => (
               <ShowtimeCard
                 id={show.id}
                 key={index}
-                title={show.movie}
+                title={show.title}
                 timings={show.timings}
                 movieType={show.movieType}
                 date={show.date}

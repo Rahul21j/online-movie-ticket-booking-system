@@ -1,16 +1,11 @@
 import Link from "next/link";
 
-type Showtime = {
-  type: string;
-  time: string;
-};
-
 type ShowtimeCardProps = {
   id: string;
   title: string;
-  movieType: string[];
-  timings: Showtime[];
+  timings:string[];
   date: string;
+  movieType: string[];
 };
   
   const ShowtimeCard = ({ id, title, timings, movieType, date }: ShowtimeCardProps) => {

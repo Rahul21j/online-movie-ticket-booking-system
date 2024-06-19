@@ -74,7 +74,7 @@ export default function Page() {
   return (
     <>
       <Header />
-      <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center min-h-[84vh]">
+      {/* <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center min-h-[84vh]">
         <h1 className="text-3xl font-bold mb-4">Sign In</h1>
         <form className="w-full max-w-md space-y-4" onSubmit={onSubmit}>
           <div>
@@ -127,7 +127,7 @@ export default function Page() {
             </Link>
           </div>
         </form>
-      </div>
+      </div> */}
       <Footer />
     </>
   );

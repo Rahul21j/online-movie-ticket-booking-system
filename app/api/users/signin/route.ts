@@ -2,7 +2,7 @@ import User from '@/app/models/User';
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs';
-import  connectDB  from '@/config/connectDB';
+import connectDB from '@/config/connectDB';
 connectDB();
 
 export async function POST(request: NextRequest) {
@@ -14,12 +14,12 @@ export async function POST(request: NextRequest) {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return Response.json({ error: 'User does not exist' }, { status: 400 });
+      return NextResponse.json({ error: 'User does not exist' }, { status: 400 });
     }
 
     const validPassword = await bcryptjs.compare(password, user.password);
     if (!validPassword) {
-      return Response.json({ error: 'Invalid password' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid password' }, { status: 400 });
     }
 
     const payload = {
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
         email: user.email,
       },
     };
-    
+
     const token = await jwt.sign(payload, process.env.JWT_SECRET!, {
       expiresIn: 36000,
     });
@@ -49,7 +49,8 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-  } catch (error: any) {
-    return Response.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const err = error as Error;
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

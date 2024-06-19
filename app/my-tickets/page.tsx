@@ -3,72 +3,83 @@ import Header from "@/app/ui/Header";
 import Footer from "@/app/ui/Footer";
 import { useEffect, useState } from "react";
 import axios from "axios";
-  
+import { useUser } from '@auth0/nextjs-auth0/client';
+import { useRouter } from "next/navigation";
+
+type Ticket = {
+  _id: string;
+  show: {
+    movie: string;
+    date: string;
+  };
+  showType: string;
+  showTime: string;
+  seatNumbers: string[];
+}
+
 export default function MyTickets() {
-    const [upcomingTickets, setUpcomingTickets] = useState([]);
-    const [historyTickets, setHistoryTickets] = useState([]);
+  const [upcomingTickets, setUpcomingTickets] = useState<Ticket[]>([]);
+  const [historyTickets, setHistoryTickets] = useState<Ticket[]>([]);
+  const router = useRouter();
+  const { user, isLoading } = useUser();
 
-    useEffect(() => {
-        async function fetchTickets() {
-          try {
-            const response = await axios.get(`/api/my-tickets`,
-              {
-                withCredentials: true, // Ensures cookies are sent
-                // Optionally, you can also set headers if needed
-                headers: {
-                  'Content-Type': 'application/json',
-                  // Other headers if required
-                },
-              }
-            );
-    
-            const tickets = response.data.ticketsWithShows;
+  const fetchTickets = async () => {
+    try {
+      const response = await axios.get(`/api/my-tickets`, {
+        withCredentials: true, // Ensures cookies are sent
+        // Optionally, you can also set headers if needed
+        headers: {
+          'Content-Type': 'application/json',
+          // Other headers if required
+        },
+      });
 
-            console.log(tickets);
+      const tickets: Ticket[] = response.data.ticketsWithShows;
 
-            const upcoming = tickets.filter((ticket: {
-              show: any; date: string | Date; 
-            }) => new Date(ticket.show.date) >= new Date());
-            const history = tickets.filter((ticket: {
-              show: any; date: string | Date; 
-            }) => new Date(ticket.show.date) < new Date());
-            console.log(upcomingTickets);
-            console.log(historyTickets);
-            setUpcomingTickets(upcoming);
-            setHistoryTickets(history);
-          } catch (error) {
-            console.error('Error fetching tickets:', error);
-          }
-        }
-    
-        fetchTickets();
-      }, []);
-    
-      const handleDelete = async (id: string) => {
-        try {
-          console.log(id);
-          const response = await axios.delete(`/api/my-tickets`,{
-            data: { id: id }
-          });
-          if (response.status === 200) {
-            console.log(upcomingTickets);
-            console.log(historyTickets);
-            setUpcomingTickets(upcomingTickets.filter(ticket => ticket._id !== id));
-            setHistoryTickets(historyTickets.filter(ticket => ticket._id !== id));
-            alert("Ticket deleted successfully");
-        } else {
-            alert("Failed to delete ticket");
-        }
-        } catch (error) {
-          console.error("Failed to delete ticket", error);
-          alert("Failed to delete ticket");
-        }
-      };
+      console.log(tickets);
+      if (tickets.length === 0) {
+        return;
+      }
+      const upcoming = tickets.filter((ticket) => new Date(ticket.show.date) >= new Date());
+      const history = tickets.filter((ticket) => new Date(ticket.show.date) < new Date());
+      setUpcomingTickets(upcoming);
+      setHistoryTickets(history);
+    } catch (error) {
+      console.error('Error fetching tickets:', error);
+    }
+  };
 
-    return (
-        <>
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/');
+    } else {
+      fetchTickets();
+    }
+  }, [isLoading, user, router]);
+
+  const handleDelete = async (id: string) => {
+    try {
+      console.log(id);
+      const response = await axios.delete(`/api/my-tickets`, {
+        data: { id: id }
+      });
+      if (response.status === 200) {
+        setUpcomingTickets(upcomingTickets.filter(ticket => ticket._id !== id));
+        setHistoryTickets(historyTickets.filter(ticket => ticket._id !== id));
+        alert("Ticket deleted successfully");
+      } else {
+        alert("Failed to delete ticket");
+      }
+    } catch (error) {
+      console.error("Failed to delete ticket", error);
+      alert("Failed to delete ticket");
+    }
+  };
+
+  return (
+    <>
       <Header />
-      <div className="max-w-7xl mx-auto py-12 md:py-16 lg:py-20 min-h-[84vh]">
+      <div className="max-w-7xl mx-auto py-12 md:py-16 lg:py-20 min-h-[83vh]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
           <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 flex flex-col justify-between">
             <div>
@@ -78,7 +89,7 @@ export default function MyTickets() {
             <div className="mt-8 space-y-4">
               {upcomingTickets.map((ticket, index) => (
                 <div key={index} className="flex items-center justify-between">
-                  <div style={{width: '21rem'}}>
+                  <div style={{ width: '21rem' }}>
                     <div className="flex">
                       <h3 className="font-semibold mr-2">{ticket.show.movie}</h3>
                       <span className="text-gray-500">({ticket.showType})</span>
@@ -91,7 +102,7 @@ export default function MyTickets() {
                   </div>
                   <div>
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button" onClick={() => handleDelete(ticket._id)}>Cancel</button>
-                  </div>  
+                  </div>
                 </div>
               ))}
             </div>
@@ -104,7 +115,7 @@ export default function MyTickets() {
             <div className="mt-8 space-y-4">
               {historyTickets.map((ticket, index) => (
                 <div key={index} className="flex items-center justify-between">
-                  <div style={{width: '21rem'}}>
+                  <div style={{ width: '21rem' }}>
                     <div className="flex">
                       <h3 className="font-semibold mr-2">{ticket.show.movie}</h3>
                       <span className="text-gray-500">({ticket.showType})</span>
@@ -123,5 +134,5 @@ export default function MyTickets() {
       </div>
       <Footer />
     </>
-    )
+  );
 }

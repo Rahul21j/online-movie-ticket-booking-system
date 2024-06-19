@@ -43,7 +43,7 @@ export async function POST(request: NextRequest, response: NextResponse){
       user = await User.create({ email });
     }
     return NextResponse.json({ success: true, user }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 400 });
-  }
+  }  
 }

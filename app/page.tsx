@@ -97,7 +97,7 @@ export default function Home({
                   show: {
                     id: string;
                     title: string;
-                    timings: { type: string; time: string }[];
+                    timings: string [];
                     movieType: string[];
                     date: string;
                   },
@@ -106,7 +106,7 @@ export default function Home({
                   <ShowtimeCard
                     id={show.id}
                     key={index}
-                    title={show.movie}
+                    title={show.title}
                     timings={show.timings}
                     movieType={show.movieType}
                     date={show.date}

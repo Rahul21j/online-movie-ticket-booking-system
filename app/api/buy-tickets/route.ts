@@ -1,14 +1,27 @@
 import { NextResponse, NextRequest } from 'next/server';
 import Show from '@/app/models/Show';
 import connectDB from '@/config/connectDB';
+import { Types } from 'mongoose';
 
 connectDB();
 
-export async function GET(req:NextRequest) {
+type Show = {
+  _id: Types.ObjectId;
+  date: string;
+  timings: string[];
+  movieType: string;
+  movieId: {
+    title: string;
+    poster: string;
+    fullplot: string;
+  } | null;
+}
+
+export async function GET(req: NextRequest) {
   try {
     const showid = req.url.split('=')[1];
-    const show = await Show.findById(showid).populate('movieId', 'title poster fullplot').lean();
-    if (show){
+    const show: Show | null = await Show.findById(showid).populate('movieId', 'title poster fullplot').lean();
+    if (show) {
       const formattedShow = {
         id: showid,
         date: show.date,
@@ -16,8 +29,8 @@ export async function GET(req:NextRequest) {
         movieType: show.movieType,
         movie: show.movieId ? show.movieId.title : null,
         moviePoster: show.movieId ? show.movieId.poster : null,
-        moviePlot: show.movieId ? show.movieId.plot : null
-      }
+        moviePlot: show.movieId ? show.movieId.fullplot : null,
+      };
       console.log(formattedShow);
       const response = NextResponse.json({
         success: true,
