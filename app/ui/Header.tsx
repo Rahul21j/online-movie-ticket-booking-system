@@ -56,7 +56,7 @@ export default function Header() {
             <path d="M17 7.5h4"></path>
             <path d="M17 16.5h4"></path>
           </svg>
-          <span className="text-xl font-bold">WatchMovies</span>
+          <span className="text-xl font-bold">CineMagic</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6">
           <Link href="/movies" className="hover:underline">

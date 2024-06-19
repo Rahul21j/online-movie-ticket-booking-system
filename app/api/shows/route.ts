@@ -26,7 +26,7 @@ export async function GET() {
         date: show.date,
         timings: show.timings,
         movieType: show.movieType,
-        movie: movie ? movie.title : null,
+        title: movie ? movie.title : null,
       };
     }));
 

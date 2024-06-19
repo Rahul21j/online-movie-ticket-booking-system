@@ -24,7 +24,7 @@ export default function Page() {
 
     fetchShows();
   }, []);
-
+  console.log(shows);
   return (
     <>
       <Header />

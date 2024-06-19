@@ -6,8 +6,12 @@ import ShowtimeCard from '../ui/ShowtimeCard';
 import Header from '@/app/ui/Header';
 import Footer from '@/app/ui/Footer';
 
+type ErrorResponse = {
+    error: string;
+};
+
 type Show = {
-    id: string;
+    _id: string;
     title: string;
     date: string;
     timings: string [];
@@ -19,10 +23,9 @@ type Show = {
 export default async function PageContent () {
     const [shows, setShows] = useState<Show[]>([]);
     const [title, setMovieTitle] = useState<string>('');
-
+    const [error, setError] = useState<ErrorResponse | null>(null);
     const searchParams = useSearchParams();
     const movieId = searchParams.get('id');
-    
     useEffect(() => {
         const fetchShows = async () => {
             if (movieId) {
@@ -32,13 +35,18 @@ export default async function PageContent () {
                     setMovieTitle(res.data.movie.title);
                     console.log(res.data.shows);
                 } catch (error) {
-                    console.error('Error fetching show:', error);
+                    if (axios.isAxiosError(error)) {
+                        setError(error.response?.data); 
+                        setMovieTitle(error.response?.data.movie.title)
+                    }
+                    else{
+                        console.error('Error fetching show:', error);
+                    }
                 }
             }
         };
         fetchShows();
     }, [movieId]);
-
     return (
         <>
             <Header />
@@ -48,7 +56,7 @@ export default async function PageContent () {
                 <Suspense fallback={<div>Loading...</div>}>
                     {shows.map((show: Show, index: number) => (
                         <ShowtimeCard
-                            id={show.id}
+                            id={show._id}
                             key={index}
                             title={show.movie}
                             timings={show.timings}
@@ -57,8 +65,8 @@ export default async function PageContent () {
                         />
                     ))}
                 </Suspense>
-                    
                 </div>
+                {error && <h1>{error.error}</h1>}
             </div>
             <Footer />
         </>
