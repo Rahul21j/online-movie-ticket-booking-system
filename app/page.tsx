@@ -100,6 +100,9 @@ export default function Home({
                     timings: string [];
                     movieType: string[];
                     date: string;
+                    
+                    typePrice: string[];
+                    
                   },
                   index: number
                 ) => (
@@ -110,6 +113,9 @@ export default function Home({
                     timings={show.timings}
                     movieType={show.movieType}
                     date={show.date}
+                    
+                    typePrice={show.typePrice}
+                    
                   />
                 )
               )}

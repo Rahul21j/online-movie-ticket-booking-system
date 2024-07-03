@@ -8,6 +8,12 @@ import SelectItem from '@/app/ui/SelectItem';
 import Input from '@/app/ui/Input';
 import { Button } from '@/app/ui/button';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import { loadStripe } from '@stripe/stripe-js';
+import Header from "@/app/ui/Header";
+import Footer from "@/app/ui/Footer";
+import Image from 'next/image';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 type ShowType = {
   id: string;
@@ -17,15 +23,9 @@ type ShowType = {
   movie: string;
   moviePoster: string;
   moviePlot: string;
-};
-
-type TicketType = {
-  type: string;
-  date: string;
-  seats: string[];
-  showtime: string;
-  email: string;
-  showid: string;
+  
+  typePrice: number[];
+  
 };
 
 const BuyTicketsPageContent: React.FC = () => {
@@ -34,7 +34,11 @@ const BuyTicketsPageContent: React.FC = () => {
   const searchParams = useSearchParams();
   const showid = searchParams.get('id');
   const [show, setShow] = useState<ShowType | null>(null);
-  const [tickets, setTickets] = useState<TicketType[]>([]);
+  
+  const [ticketQuantity, setTicketQuantity] = useState(1);
+  const [seatInput, setSeatInput] = useState('');
+  const [ticketHolderNames, setTicketHolderNames] = useState<string[]>([]);
+  
   
   useEffect(() => {
     const fetchShow = async () => {
@@ -98,96 +102,152 @@ const BuyTicketsPageContent: React.FC = () => {
   
     const type = (document.getElementById('showtime') as HTMLInputElement).value.split('-')[0].trim();
     const showtime = (document.getElementById('showtime') as HTMLInputElement).value.split('-')[1].trim();
-    const email = (document.getElementById('email') as HTMLInputElement).value;
-    const newTicket: TicketType = {
-      type,
-      date: show.date,
-      seats: seatArray,
-      showtime,
-      email,
-      showid
-    };
-  
-    try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
+
+    const typePrice = (document.getElementById('showtime') as HTMLInputElement).value.split('$')[1].trim();
+
+    const email = user.email || '';
+
+    const stripe = await stripePromise;
+      const checkoutSession = await axios.post('/api/checkout-session', {
+        metadata: {
+          type,
+          date: show.date,
+          seats: seatArray.toString(),
+          screen: getRandomScreenNumber(type),
+          showtime,
+          email,
+          showid,
+          typePrice,
+          movie: show.movie,
+          ticketHolderNames: ticketHolderNames.join(','),
         },
-      };
-      const res = await axios.post('/api/my-tickets', newTicket, config);
-      setTickets((prevTickets) => [...prevTickets, newTicket]);
-      router.push('/my-tickets');
-    } catch (error) {
-      console.error('Error booking ticket:', error);
-      alert('Error booking ticket. Please try again.');
+        ticketQuantity,
+        show,
+        email,
+      });
+
+      const result = await stripe!.redirectToCheckout({
+        sessionId: checkoutSession.data.id,
+      });
+
+      if (result.error) {
+        alert(result.error.message);
+      }
+  };
+
+  const handleTicketQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const quantity = parseInt(event.target.value, 10);
+    if (!isNaN(quantity) && quantity >= 1 && quantity <= 10) {
+      setTicketQuantity(quantity);
     }
   };
+
+  const handleSeatInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSeatInput(event.target.value);
+  };
   
+  const handleTicketHolderNameChange = (index: number, name: string) => {
+    const updatedNames = [...ticketHolderNames];
+    updatedNames[index] = name;
+    setTicketHolderNames(updatedNames);
+  };
+
+  function getRandomScreenNumber(movieType:string) {
+    let screenNumber;
+    
+    switch (movieType.toLowerCase()) {
+      case '2d':
+        screenNumber = Math.floor(Math.random() * 3) + 1;
+        break;
+      case '3d':
+        screenNumber = Math.floor(Math.random() * 2) + 4;
+        break;
+      case 'imax':
+        screenNumber = 6;
+        break;
+      default:
+        screenNumber = 1;
+        break;
+    }
+  
+    return screenNumber;
+  }
+
   return (
-    <div className="w-full max-w-4xl mx-auto py-12 md:py-16 lg:py-20 min-h-[84vh]">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-        <div>
-          <img
-            src={show.moviePoster}
-            width={600}
-            height={400}
-            alt="Show Poster"
-            className="rounded-lg shadow-lg"
-          />
-        </div>
-        <div className="space-y-4">
+    <>
+      <Header />
+      <div className="w-full max-w-4xl mx-auto py-10 md:py-12 lg:py-14 min-h-[84vh]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{show.movie}</h1>
-            <p className="text-gray-500 dark:text-gray-400">
-              {show.moviePlot}
-            </p>
+            <Image
+              src={show.moviePoster}
+              width={600}
+              height={400}
+              alt="Show Poster"
+              className="rounded-lg shadow-lg"
+            />
           </div>
-          <form onSubmit={handleFormSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="showtime">Select Showtime</Label>
-                <Select id="showtime" defaultValue={`${show.movieType[0]} - ${show.timings[0]}`}>
-                  {show.timings.map((timing, index) => (
-                    <SelectItem key={index} value={`${show.movieType[index]} - ${timing}`}>
-                      {show.movieType[index]} - {timing}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </div>
-              <div>
+          <div className="space-y-4">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">{show.movie}</h1>
+              <p className="text-gray-500 dark:text-gray-400">
+                {show.moviePlot}
+              </p>
+            </div>
+            <form onSubmit={handleFormSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="showtime">Select Showtime</Label>
+                  <Select id="showtime" defaultValue={`${show.movieType[0]} - ${show.timings[0]} - $${show.typePrice[0]}`}>
+                    {show.timings.map((timing, index) => (
+                      <SelectItem key={index} value={`${show.movieType[index]} - ${timing} - $${show.typePrice[index]}`}>
+                        {show.movieType[index]} - {timing} - ${show.typePrice[index]}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                </div>
+                <div>
                 <Label htmlFor="tickets">Select Tickets</Label>
-                <Select id="tickets" defaultValue='1'>
-                  {[1, 2, 3, 4, 5].map((number) => (
-                    <SelectItem key={number} value={number.toString()}>
-                      {number}
-                    </SelectItem>
-                  ))}
-                </Select>
+                <Input
+                  id="tickets"
+                  type="number"
+                  min="1"
+                  max="10"
+                  placeholder='Enter number of tickets (max 10)'
+                  value={ticketQuantity}
+                  onChange={handleTicketQuantityChange}
+                />
+                </div>
+              <div>
+                <Label htmlFor="seats">Seats</Label>
+                <Input
+                  id="seats"
+                  type="text"
+                  placeholder="Enter seat preferences (e.g., A1, B2, C3)"
+                  value={seatInput}
+                  onChange={handleSeatInputChange}
+                />
               </div>
-            </div>
-            <div>
-              <Label htmlFor="seats">Seats</Label>
-              <Input
-                id="seats"
-                type="text"
-                placeholder="Enter seat preferences (e.g., A1, B2, C3)"
-              />
-            </div>
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" type="text" placeholder="Enter your name" />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="Enter your email" />
-            </div>
-            <Button type="submit" className="w-full">
-              Confirm
-            </Button>
-          </form>
+              {Array.from({ length: ticketQuantity }).map((_, index) => (
+                <div key={index}>
+                  <Label htmlFor={`userName${index + 1}`}>Ticket {index + 1} Holder&apos;s Name</Label>
+                  <Input
+                    id={`userName${index + 1}`}
+                    type="text"
+                    placeholder={`Enter name for Ticket ${index + 1}`}
+                    value={ticketHolderNames[index]}
+                    onChange={(e) => handleTicketHolderNameChange(index, e.target.value)}
+                  />
+                </div>
+              ))}
+              <Button type="submit" className="w-full">
+                Confirm
+              </Button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 

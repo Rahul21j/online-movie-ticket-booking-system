@@ -40,6 +40,9 @@ export default function Page() {
                 description: string;
                 movieType: string[];
                 timings: string[];
+                
+                typePrice: string[]; 
+                
               },
               index: Key | null | undefined
             ) => (
@@ -49,6 +52,9 @@ export default function Page() {
                 title={show.title}
                 timings={show.timings}
                 movieType={show.movieType}
+                
+                typePrice={show.typePrice}
+                
                 date={show.date}
               />
             )

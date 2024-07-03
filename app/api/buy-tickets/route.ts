@@ -15,6 +15,9 @@ type Show = {
     poster: string;
     fullplot: string;
   } | null;
+  
+  typePrice: number[];
+  
 }
 
 export async function GET(req: NextRequest) {
@@ -30,6 +33,7 @@ export async function GET(req: NextRequest) {
         movie: show.movieId ? show.movieId.title : null,
         moviePoster: show.movieId ? show.movieId.poster : null,
         moviePlot: show.movieId ? show.movieId.fullplot : null,
+        typePrice: show.typePrice,
       };
       console.log(formattedShow);
       const response = NextResponse.json({

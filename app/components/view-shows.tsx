@@ -18,6 +18,9 @@ type Show = {
     movieType: string [];
     description: string;
     movie: string;
+    
+    typePrice: string [];
+    
 };
 
 export default async function PageContent () {
@@ -62,6 +65,9 @@ export default async function PageContent () {
                             timings={show.timings}
                             movieType={show.movieType}
                             date={show.date}
+                            
+                            typePrice={show.typePrice}
+                            
                         />
                     ))}
                 </Suspense>

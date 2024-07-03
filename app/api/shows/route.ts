@@ -27,6 +27,9 @@ export async function GET() {
         timings: show.timings,
         movieType: show.movieType,
         title: movie ? movie.title : null,
+        
+        typePrice: show.typePrice
+        
       };
     }));
 

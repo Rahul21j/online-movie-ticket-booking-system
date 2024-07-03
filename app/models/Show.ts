@@ -27,6 +27,12 @@ const showSchema = new Schema({
     type: [String],
     required: true,
   },
+  
+  typePrice: {
+    type: [Number],
+    required: true,
+  },
+  
 });
 
 const Show = mongoose.models.Show || mongoose.model('Show', showSchema);

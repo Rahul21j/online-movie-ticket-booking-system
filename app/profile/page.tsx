@@ -3,6 +3,7 @@
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Header from '@/app/ui/Header';
 import Footer from '@/app/ui/Footer';
+import Image from 'next/image';
 
 export default function ProfileClient() {
   const { user, error, isLoading } = useUser();
@@ -17,7 +18,7 @@ export default function ProfileClient() {
         <div className="min-h-[83vh] bg-gray-100 flex items-center justify-center">
           <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
             <div className="text-center">
-              <img
+              <Image
                 className="w-32 h-32 rounded-full mx-auto"
                 src={user.picture ?? '/placeholder.jpg'}
                 alt={user.name ?? ''}

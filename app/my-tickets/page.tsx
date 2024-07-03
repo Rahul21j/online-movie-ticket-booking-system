@@ -15,6 +15,7 @@ type Ticket = {
   showType: string;
   showTime: string;
   seatNumbers: string[];
+  screen: number;
 }
 
 export default function MyTickets() {
@@ -79,28 +80,27 @@ export default function MyTickets() {
   return (
     <>
       <Header />
-      <div className="max-w-7xl mx-auto py-12 md:py-16 lg:py-20 min-h-[83vh]">
+      <div className="max-w-7xl mx-auto py-7 md:py-7 lg:py-7 min-h-[83vh]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
           <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 flex flex-col justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Upcoming Tickets</h1>
               <p className="text-gray-500 dark:text-gray-400 mt-2">Review your upcoming movie tickets.</p>
             </div>
-            <div className="mt-8 space-y-4">
+            <div className="mt-4 space-y-4 overflow-y-auto" style={{ maxHeight: '59vh' }}>
               {upcomingTickets.map((ticket, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div style={{ width: '21rem' }}>
+                <div key={index} className="grid grid-cols-3 items-center gap-4 border-b border-gray-200 py-4">
+                  <div className="col-span-2" style={{ width: '21rem' }}>
                     <div className="flex">
                       <h3 className="font-semibold mr-2">{ticket.show.movie}</h3>
                       <span className="text-gray-500">({ticket.showType})</span>
                     </div>
                     <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.show.date} - {ticket.showTime}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm"><strong>Screen: </strong>{ticket.screen}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right col-span-1 pr-3">
                     <p className="font-semibold">Persons: {ticket.seatNumbers.length}</p>
                     <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.seatNumbers.join(', ')}</p>
-                  </div>
-                  <div>
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button" onClick={() => handleDelete(ticket._id)}>Cancel</button>
                   </div>
                 </div>
@@ -112,19 +112,20 @@ export default function MyTickets() {
               <h1 className="text-3xl font-bold tracking-tight">History</h1>
               <p className="text-gray-500 dark:text-gray-400 mt-2">Review your previous movie tickets.</p>
             </div>
-            <div className="mt-8 space-y-4">
+            <div className="mt-4 space-y-4 overflow-y-auto" style={{ maxHeight: '59vh' }}>
               {historyTickets.map((ticket, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div style={{ width: '21rem' }}>
+                <div key={index} className="grid grid-cols-3 items-center gap-4 border-b border-gray-200 py-4">
+                  <div className="col-span-2" style={{ width: '21rem' }}>
                     <div className="flex">
                       <h3 className="font-semibold mr-2">{ticket.show.movie}</h3>
                       <span className="text-gray-500">({ticket.showType})</span>
                     </div>
                     <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.show.date} - {ticket.showTime}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right col-span-1 pr-3">
                     <p className="font-semibold">Persons: {ticket.seatNumbers.length}</p>
                     <p className="text-gray-500 dark:text-gray-400 text-sm">{ticket.seatNumbers.join(', ')}</p>
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button" onClick={() => handleDelete(ticket._id)}>Cancel</button>
                   </div>
                 </div>
               ))}

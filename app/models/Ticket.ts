@@ -16,6 +16,12 @@ const ticketSchema = new Schema({
     type: [String],
     required: true,
   },
+  
+  seatHolderNames: {
+    type: [String],
+    required: true,
+  },
+  
   bookingDate: {
     type: String,
     default: () => new Date().toISOString(),
@@ -26,6 +32,15 @@ const ticketSchema = new Schema({
   },
   showTime:{
     type: String,
+    required: true,
+  },
+  transactionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Transaction',
+    required: true,
+  },
+  screen: {
+    type: Number,
     required: true,
   }
 });
