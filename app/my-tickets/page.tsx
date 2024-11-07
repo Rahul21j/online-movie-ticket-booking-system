@@ -82,7 +82,7 @@ export default function MyTickets() {
       <Header />
       <div className="max-w-7xl mx-auto py-7 md:py-7 lg:py-7 min-h-[83vh]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-          <div className="bg-gray-100 rounded-lg p-6 flex flex-col justify-between">
+          <div className="bg-gray-100 rounded-lg p-6 flex flex-col justify-between tickets">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Upcoming Tickets</h1>
               <p className="text-gray-500 dark:text-gray-400 mt-2">Review your upcoming movie tickets.</p>
@@ -107,7 +107,7 @@ export default function MyTickets() {
               ))}
             </div>
           </div>
-          <div className="bg-gray-100 rounded-lg p-6 flex flex-col justify-between">
+          <div className="bg-gray-100 rounded-lg p-6 flex flex-col justify-between tickets">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">History</h1>
               <p className="text-gray-500 dark:text-gray-400 mt-2">Review your previous movie tickets.</p>
