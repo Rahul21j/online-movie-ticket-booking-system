@@ -107,7 +107,7 @@ export default function MyTickets() {
               ))}
             </div>
           </div>
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 flex flex-col justify-between">
+          <div className="bg-gray-100 rounded-lg p-6 flex flex-col justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">History</h1>
               <p className="text-gray-500 dark:text-gray-400 mt-2">Review your previous movie tickets.</p>
